@@ -1,0 +1,50 @@
+{
+  "name": "mock",
+  "productName": "Mock",
+  "version": "1.0.0",
+  "description": "Mock response data, support for Browser and Node.js.",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --debug",
+    "package": "npm-run-all package:*",
+    "package:win": "electron-packager . --overwrite --platform=win32 --arch=ia32 --out=out --icon=static/image/mock.ico",
+    "package:installer": "node ./installer.js",
+    "package:inno": "cd inno && ISCC.exe ../setup.iss"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eshengsky/Mock.git"
+  },
+  "keywords": [
+    "Mock"
+  ],
+  "author": "Sky Sun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eshengsky/Mock/issues"
+  },
+  "homepage": "https://github.com/eshengsky/Mock#readme",
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.2",
+    "electron-winstaller": "^2.6.3",
+    "npm-run-all": "^4.1.1",
+    "rimraf": "^2.6.2"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "bootstrap-switch": "^3.3.4",
+    "font-awesome": "^4.7.0",
+    "fuelux": "^3.16.2",
+    "http-mitm-proxy": "^0.6.0",
+    "jquery": "^3.2.1",
+    "monaco-editor": "^0.10.1",
+    "node-windows": "^0.1.14",
+    "regedit": "^2.2.7",
+    "request": "^2.83.0",
+    "shortid": "^2.2.8",
+    "showdown": "^1.8.6",
+    "sweetalert2": "^7.1.1"
+  }
+}
