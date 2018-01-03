@@ -53,9 +53,19 @@ input::-webkit-inner-spin-button{
 
 .list-panel, .edit-panel {
     padding: 20px;
+    position: absolute;
+    width: 100%;
+    background: #fff;
+    box-shadow: 1px -8px 8px #111;
 }
 
 .edit-panel {
+    display: none;
+    left: 101%;
+    transition: all 0.5s;
+}
+
+.log-panel {
     display: none;
 }
 

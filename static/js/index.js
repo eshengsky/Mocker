@@ -14,6 +14,7 @@ class Mock {
         this.$listPanel = $('.list-panel');
         this.$btnBack = $('.btn-back');
         this.$editPanel = $('.edit-panel');
+        this.$logUl = $('.log-panel ul');
         this.$textUri = $('#text-uri');
         this.$formUri = $('#form-uri');
         this.$selectMethod = $('#select-method');
@@ -238,6 +239,26 @@ class Mock {
     }
 
     /**
+     * 重置详情
+     */
+    resetMockDetails() {
+        this.$uid.val('');
+        this.$textUri.val('');
+        this.$selectMethod.selectlist('selectByValue', 'ALL');
+        this.$selectStatus.combobox('selectByValue', '200');
+        this.$selectMime.combobox('selectByValue', 'application/json; charset=UTF-8');
+        this.$textHeader.val('');
+        this.$selectMode.val('json');
+        this.initEditor({
+            text: `{
+"code": "1"
+}`,
+            mode: 'json'
+        });
+        this.$textDelay.val('0');
+    }
+
+    /**
      * 初始化详情
      * @param {string} [uid] - 唯一id，为空则来自新建
      */
@@ -245,20 +266,7 @@ class Mock {
         this.$formUri.removeClass('has-error');
         if (!uid) {
             // 没有 uid，说明是新建
-            this.$uid.val('');
-            this.$textUri.val('');
-            this.$selectMethod.selectlist('selectByValue', 'ALL');
-            this.$selectStatus.combobox('selectByValue', '200');
-            this.$selectMime.combobox('selectByValue', 'application/json; charset=UTF-8');
-            this.$textHeader.val('');
-            this.$selectMode.val('json');
-            this.initEditor({
-                text: `{
-    "code": "1"
-}`,
-                mode: 'json'
-            });
-            this.$textDelay.val('0');
+            this.resetMockDetails();
             this.$textUri.focus();
         } else {
             // 编辑
@@ -327,15 +335,21 @@ class Mock {
      */
     bindEvents() {
         this.$btnNew.on('click', () => {
-            this.$listPanel.hide();
-            this.$editPanel.show();
-            this.initMockDetails();
+            this.$editPanel.show(0, () => {
+                this.$editPanel.css('left', '0');
+                setTimeout(() => {
+                    this.initMockDetails();
+                }, 500);
+            });
         });
 
         window.editMock = uid => {
-            this.$listPanel.hide();
-            this.$editPanel.show();
-            this.initMockDetails(uid);
+            this.$editPanel.show(0, () => {
+                this.$editPanel.css('left', '0');
+            });
+            setTimeout(() => {
+                this.initMockDetails(uid);
+            }, 500);
         };
 
         window.delMock = uid => {
@@ -349,8 +363,11 @@ class Mock {
         };
 
         this.$btnBack.on('click', () => {
-            this.$listPanel.show();
-            this.$editPanel.hide();
+            this.$editPanel.css('left', '101%');
+            setTimeout(() => {
+                this.$editPanel.hide();
+                this.resetMockDetails();
+            }, 500);
             this.initMockList();
         });
 
@@ -475,13 +492,17 @@ class Mock {
                     // 没有更新版本
                     swal({
                         title: '没有更新',
-                        text: `你已是最新版本 ${versionStr}`,
+                        text: `你已是最新版本 v${app.getVersion()}`,
                         type: 'success',
                         showConfirmButton: false,
                         timer: 2500
                     });
                 }
             });
+        });
+
+        ipcRenderer.on('log', (event, { type, message }) => {
+            this.$logUl.append(`<li class="${type}">${message}</li>`);
         });
     }
 }

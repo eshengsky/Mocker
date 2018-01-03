@@ -1,19 +1,13 @@
 ﻿'use strict';
 const path = require('path');
 const fs = require('fs');
-const wincmd = require('node-windows');
+const isAdmin = require('is-admin');
 const electron = require('electron');
-const Proxy = require('http-mitm-proxy');
-const regedit = require('regedit');
-const cp = require('child_process');
 const ipc = electron.ipcMain;
 const dialog = electron.dialog;
-const Menu = electron.Menu;
-
-/**
- * 代理服务器接口
- */
-const proxyServerPort = 2017;
+const setMenu = require('./set_menu');
+const proxy = require('./proxy');
+const registerProxy = require('./registry');
 
 // Module to control application life.
 const app = electron.app;
@@ -28,10 +22,14 @@ let mainWindow = null;
 const settingsFilePath = path.resolve(app.getPath('userData'), 'settings.json');
 
 // mock 设置，默认为空数组
-let mockSettings = [];
+global.mockSettings = [];
 
 process.on('uncaughtException', err => {
     console.error(err);
+    mainWindow.webContents.send('log', {
+        type: 'error',
+        message: `uncaughtException: ${err.message}`
+    });
 });
 
 function initialize() {
@@ -68,8 +66,8 @@ function initialize() {
 
     function createWindow() {
         const windowOptions = {
-            width: 680,
-            minWidth: 450,
+            width: 700,
+            minWidth: 500,
             height: 840,
             icon: path.join(__dirname, `${process.platform === 'win32' ? '/static/image/mock.ico' : '/static/image/mock.png'}`),
             show: false
@@ -99,236 +97,31 @@ function initialize() {
         });
     }
 
-    function setMenu() {
-        // Menus
-        const template = [{
-            label: '文件',
-            submenu: [{
-                label: '新建',
-                accelerator: 'CmdOrCtrl+N',
-                click(item, focusedWindow) {
-                    // send to renderer
-                    focusedWindow.webContents.send('new', true);
-                }
-            }, {
-                label: '退出',
-                accelerator: 'CmdOrCtrl+W',
-                click() {
-                    app.exit(0);
-                }
-            }]
-        }, {
-            label: '编辑',
-            submenu: [{
-                label: '复制',
-                accelerator: 'CmdOrCtrl+C',
-                role: 'copy'
-            }, {
-                label: '剪切',
-                accelerator: 'CmdOrCtrl+X',
-                role: 'cut'
-            }, {
-                label: '粘贴',
-                accelerator: 'CmdOrCtrl+V',
-                role: 'paste'
-            }, {
-                label: '全选',
-                accelerator: 'CmdOrCtrl+A',
-                role: 'selectall'
-            }]
-        }, {
-            label: '窗口',
-            submenu: [{
-                label: '最小化',
-                role: 'minimize'
-            }, {
-                label: '全屏模式',
-                accelerator: 'F11',
-                click(item, focusedWindow) {
-                    if (focusedWindow) {
-                        focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
-                    }
-                }
-            }]
-        }, {
-            label: '帮助',
-            submenu: [{
-                label: `版本 ${app.getVersion()}`,
-                enabled: false
-            }, {
-                label: '项目主页',
-                click() {
-                    electron.shell.openExternal('https://github.com/eshengsky/Mock');
-                }
-            }, {
-                label: '问题反馈',
-                click() {
-                    electron.shell.openExternal('https://github.com/eshengsky/Mock/issues');
-                }
-            }, {
-                type: 'separator'
-            }, {
-                label: '切换开发人员工具',
-                accelerator: 'F12',
-                role: 'toggledevtools'
-            }, {
-                type: 'separator'
-            }, {
-                label: '检查更新...',
-                click(item, focusedWindow) {
-                    // send to renderer
-                    focusedWindow.webContents.send('update', true);
-                }
-            }, {
-                type: 'separator'
-            }, {
-                label: '关于作者',
-                click() {
-                    electron.shell.openExternal('http://www.skysun.name/about');
-                }
-            }]
-        }];
-        const menu = Menu.buildFromTemplate(template);
-        Menu.setApplicationMenu(menu);
-    }
-
-    function getFullUrl(request) {
-        const secure = request.connection.encrypted || request.headers['x-forwarded-proto'] === 'https';
-        return `http${secure ? 's' : ''}://${request.headers.host}${request.url}`;
-    }
-
-    /**
-     * 创建代理服务器
-     */
-    function createProxy() {
-        const proxy = Proxy();
-
-        proxy.onError((ctx, err, errorKind) => {
-            let url = '[undefined]';
-            if (ctx && ctx.clientToProxyRequest) {
-                url = getFullUrl(ctx.clientToProxyRequest);
-            }
-            console.error(`${errorKind} on ${url}:`, err);
-        });
-
-        proxy.onRequest((ctx, callback) => {
-            const req = ctx.clientToProxyRequest;
-            const fullUrl = getFullUrl(req);
-            console.log(`${req.method.toUpperCase()} ${fullUrl}`);
-            const findOne = mockSettings.find(t => (fullUrl.indexOf(t.uri) >= 0)
-                && (t.method === 'ALL' || (t.method.toUpperCase() === req.method.toUpperCase()))
-                && (t.active === '1'));
-            if (findOne) {
-                // 触发规则
-                console.log('Trigger Rule:', findOne);
-                const responseCode = findOne.code;
-                const responseType = findOne.mime;
-                const responseHeaders = findOne.headers;
-                const responseBody = findOne.body;
-                const responseDelay = findOne.delay;
-
-                ctx.use(Proxy.gunzip);
-                ctx.proxyToClientResponse.statusCode = responseCode;
-                ctx.proxyToClientResponse.setHeader('mock-data', 'true');
-                ctx.proxyToClientResponse.setHeader('content-type', responseType);
-                if (responseHeaders) {
-                    const headerArr = responseHeaders.split('\n');
-                    headerArr.forEach(item => {
-                        const header = item.split(':');
-                        let key = header[0];
-                        let value = header[1];
-                        if (key != null) {
-                            key = key.trim();
-                            if (key) {
-                                value = value ? value.trim() : '';
-                                ctx.proxyToClientResponse.setHeader(key, value);
-                            }
-                        }
-                    });
-                }
-                setTimeout(() => {
-                    ctx.proxyToClientResponse.end(new Buffer(responseBody));
-                }, responseDelay);
-                return;
-            }
-            ctx.proxyToServerRequestOptions.rejectUnauthorized = false;
-            callback();
-        });
-
-        proxy.listen({ port: proxyServerPort });
-    }
-
-    /**
-     * 重启文件系统（使得注册表修改立即生效）
-     */
-    function restartExplorer() {
-        cp.exec('taskkill /f /im explorer.exe&start explorer.exe', (err, stdout, stderr) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-        });
-    }
-
-    /**
-     * 注册代理信息
-     * @param {*} enable 是否开启代理
-     */
-    function registerProxy(enable = true) {
-        let config;
-        if (enable) {
-            config = {
-                ProxyServer: {
-                    value: `http=127.0.0.1:${proxyServerPort};https=127.0.0.1:${proxyServerPort};`,
-                    type: 'REG_SZ'
-                },
-                ProxyOverride: {
-                    value: '',
-                    type: 'REG_SZ'
-                },
-                ProxyEnable: {
-                    value: 1,
-                    type: 'REG_DWORD'
-                }
-            };
-        } else {
-            config = {
-                ProxyEnable: {
-                    value: 0,
-                    type: 'REG_DWORD'
-                }
-            };
-        }
-        regedit.putValue({
-            'HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings': config
-        }, () => {
-            console.log('registerProxy 注册代理信息完成！');
-            restartExplorer();
-        }, err => {
-            console.error('registerProxy 注册代理信息出错！', err);
-        });
-    }
-
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', () => {
         // 检查是否是管理员用户
-        wincmd.isAdminUser(isAdmin => {
-            if (!isAdmin) {
-                dialog.showErrorBox('错误', '请使用Windows管理员身份运行！');
+        isAdmin().then(admin => {
+            if (!admin) {
+                dialog.showMessageBox({
+                    type: 'info',
+                    buttons: [],
+                    title: '说明',
+                    message: '请以Windows管理员身份运行Mock！'
+                });
                 app.exit();
                 return;
             }
 
             // 更新mock配置
             getLatestSettings().then(data => {
-                mockSettings = data;
+                global.mockSettings = data;
             });
 
             // 界面修改后，自动更新
             ipc.on('settingsModified', () => {
                 getLatestSettings().then(data => {
-                    mockSettings = data;
+                    global.mockSettings = data;
                 });
             });
 
@@ -339,10 +132,10 @@ function initialize() {
             setMenu();
 
             // 创建代理服务器
-            createProxy();
+            proxy.init(mainWindow);
 
             // 注册代理信息
-            registerProxy();
+            registerProxy(mainWindow);
         });
     });
 
@@ -365,13 +158,17 @@ function initialize() {
 
     app.on('before-quit', e => {
         e.preventDefault();
-        registerProxy(false);
+        global.mockSettings = null;
+        proxy.close();
+        registerProxy(mainWindow, false);
+        app.exit();
+    });
 
-        // 5秒后真正退出程序
-        setTimeout(() => {
-            app.exit();
-        }, 5000);
-        app.isQuiting = true;
+    app.setAsDefaultProtocolClient('mock');
+
+    // 外部链接 mock://xxx 打开，备用
+    app.on('open-url', (event, url) => {
+        dialog.showMessageBox('Welcome Back', `You arrived from: ${url}`);
     });
 }
 
