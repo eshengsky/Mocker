@@ -2,11 +2,11 @@
 
 # Mock
 
-:gem: HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用来模拟接口返回，提高开发及测试效率。  
+HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用来模拟接口返回，提高开发及测试效率。  
 基于 [Node.js](https://nodejs.org) 和 [Electron](http://electron.atom.io/) 构建。
 
 ## 界面预览
-![image](https://github.com/eshengsky/HostsDock/blob/master/static/image/review.png)
+![image](https://github.com/eshengsky/HostsDock/blob/master/static/image/preview.png)
 
 ## 功能特色
 * 基于代理服务器机制并自动设置
