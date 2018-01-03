@@ -6,7 +6,7 @@ HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用
 基于 [Node.js](https://nodejs.org) 和 [Electron](http://electron.atom.io/) 构建。
 
 ## 界面预览
-![image](https://github.com/eshengsky/Mock/blob/master/static/image/preview.png)
+![image](https://raw.githubusercontent.com/eshengsky/Mock/master/static/image/preview.png)
 
 ## 功能特色
 * 基于代理服务器机制并自动设置
