@@ -1,6 +1,10 @@
 const electron = require('electron');
+const fs = require('fs');
+const path = require('path');
+const cp = require('child_process');
 const Menu = electron.Menu;
 const app = electron.app;
+const dialog = electron.dialog;
 
 module.exports = () => {
     const template = [{
@@ -46,6 +50,32 @@ module.exports = () => {
             label: '全选',
             accelerator: 'CmdOrCtrl+A',
             role: 'selectall'
+        }]
+    }, {
+        label: 'SSL',
+        submenu: [{
+            label: '下载证书',
+            click() {
+                dialog.showSaveDialog({
+                    title: '保存SSL证书',
+                    defaultPath: 'ca.pem'
+                }, fileName => {
+                    if (fileName) {
+                        const caPath = path.join(__dirname, './\.http-mitm-proxy/certs/ca.pem');
+                        fs.createReadStream(caPath).pipe(fs.createWriteStream(fileName));
+                    }
+                });
+            }
+        }, {
+            label: '打开证书管理器',
+            click() {
+                cp.exec('certmgr.msc');
+            }
+        }, {
+            label: '安装说明',
+            click() {
+                electron.shell.openExternal('https://github.com/eshengsky/Mock#常见问题');
+            }
         }]
     }, {
         label: '窗口',

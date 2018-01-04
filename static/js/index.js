@@ -31,6 +31,7 @@ class Mock {
         swal.setDefaults({
             cancelButtonText: '取消',
             buttonsStyling: false,
+            confirmButtonClass: 'btn btn-primary',
             cancelButtonClass: 'btn btn-default',
             width: '400px'
         });
@@ -85,7 +86,7 @@ class Mock {
                                         swal({
                                             title: '保存出错',
                                             text: err.message,
-                                            cancelButtonText: '关闭',
+                                            confirmButtonText: '关闭',
                                             type: 'error'
                                         });
                                         return;
@@ -209,7 +210,7 @@ class Mock {
                     swal({
                         title: '保存出错',
                         text: err.message,
-                        cancelButtonText: '关闭',
+                        confirmButtonText: '关闭',
                         type: 'error'
                     });
                     return;
@@ -232,7 +233,7 @@ class Mock {
             swal({
                 title: '保存出错',
                 text: err.message,
-                cancelButtonText: '关闭',
+                confirmButtonText: '关闭',
                 type: 'error'
             });
         });
@@ -251,7 +252,7 @@ class Mock {
         this.$selectMode.val('json');
         this.initEditor({
             text: `{
-"code": "1"
+    "code": "1"
 }`,
             mode: 'json'
         });
@@ -308,7 +309,7 @@ class Mock {
                                 swal({
                                     title: '出错了',
                                     text: err.message,
-                                    cancelButtonText: '关闭',
+                                    confirmButtonText: '关闭',
                                     type: 'error'
                                 });
                                 return;
@@ -459,7 +460,7 @@ class Mock {
                     swal({
                         title: '检查更新失败',
                         text: err.message,
-                        cancelButtonText: '关闭',
+                        confirmButtonText: '关闭',
                         type: 'error'
                     });
                     return;
@@ -494,8 +495,7 @@ class Mock {
                         title: '没有更新',
                         text: `你已是最新版本 v${app.getVersion()}`,
                         type: 'success',
-                        showConfirmButton: false,
-                        timer: 2500
+                        confirmButtonText: '关闭'
                     });
                 }
             });

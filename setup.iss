@@ -2,13 +2,13 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Mock"
-#define MyAppVersion "2.0.0"
+#define MyAppVersion "2.1.0"
 #define MyAppURL "https://github.com/eshengsky/Mock"
 #define MyAppExeName "Mock.exe"
 #define MyAppPublisher "Sky.Sun"
 #define SourcePath "out\Mock-win32-ia32"
 #define OutputPath "out"
-#define OutputName "Mock_2.0.0"
+#define OutputName "Mock_2.1.0"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.

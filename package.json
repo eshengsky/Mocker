@@ -1,7 +1,7 @@
 {
   "name": "mock",
   "productName": "Mock",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Mock response data, support for Browser and Node.js.",
   "private": true,
   "main": "main.js",
