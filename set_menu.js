@@ -54,14 +54,19 @@ module.exports = () => {
     }, {
         label: 'SSL',
         submenu: [{
-            label: '下载证书',
+            label: '下载证书...',
             click() {
                 dialog.showSaveDialog({
-                    title: '保存SSL证书',
-                    defaultPath: 'ca.pem'
+                    title: '保存证书',
+                    defaultPath: path.join(app.getPath('desktop'), 'MockCA.pem'),
+                    buttonLabel: '保存证书',
+                    filters: [{
+                        name: 'pem',
+                        extensions: ['pem']
+                    }]
                 }, fileName => {
                     if (fileName) {
-                        const caPath = path.join(__dirname, './\.http-mitm-proxy/certs/ca.pem');
+                        const caPath = path.join(app.getPath('userData'), './SSL/certs/ca\.pem');
                         fs.createReadStream(caPath).pipe(fs.createWriteStream(fileName));
                     }
                 });

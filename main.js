@@ -1,12 +1,11 @@
 ﻿'use strict';
 const path = require('path');
 const fs = require('fs');
-const isAdmin = require('is-admin');
 const electron = require('electron');
 const ipc = electron.ipcMain;
 const dialog = electron.dialog;
 const setMenu = require('./set_menu');
-const proxy = require('./proxy');
+const createProxy = require('./proxy');
 const registerProxy = require('./registry');
 
 // Module to control application life.
@@ -19,6 +18,7 @@ const debug = /--debug/.test(process.argv[2]);
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow = null;
+let proxy = null;
 const settingsFilePath = path.resolve(app.getPath('userData'), 'settings.json');
 
 // mock 设置，默认为空数组
@@ -28,7 +28,15 @@ process.on('uncaughtException', err => {
     console.error(err);
     mainWindow.webContents.send('log', {
         type: 'error',
-        message: `uncaughtException: ${err.message}`
+        message: `uncaughtException: ${err.stack}`
+    });
+});
+
+process.on('unhandledRejection', err => {
+    console.error(err);
+    mainWindow.webContents.send('log', {
+        type: 'error',
+        message: `unhandledRejection: ${err.message}`
     });
 });
 
@@ -100,43 +108,29 @@ function initialize() {
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', () => {
-        // 检查是否是管理员用户
-        isAdmin().then(admin => {
-            if (!admin) {
-                dialog.showMessageBox({
-                    type: 'info',
-                    buttons: [],
-                    title: '说明',
-                    message: '请以Windows管理员身份运行Mock！'
-                });
-                app.exit();
-                return;
-            }
+        // 更新mock配置
+        getLatestSettings().then(data => {
+            global.mockSettings = data;
+        });
 
-            // 更新mock配置
+        // 界面修改后，自动更新
+        ipc.on('settingsModified', () => {
             getLatestSettings().then(data => {
                 global.mockSettings = data;
             });
-
-            // 界面修改后，自动更新
-            ipc.on('settingsModified', () => {
-                getLatestSettings().then(data => {
-                    global.mockSettings = data;
-                });
-            });
-
-            // 创建UI
-            createWindow();
-
-            // 设置菜单
-            setMenu();
-
-            // 创建代理服务器
-            proxy.init(mainWindow);
-
-            // 注册代理信息
-            registerProxy(mainWindow);
         });
+
+        // 创建UI
+        createWindow();
+
+        // 设置菜单
+        setMenu();
+
+        // 创建代理服务器
+        proxy =  createProxy(mainWindow);
+
+        // 注册代理信息
+        registerProxy(mainWindow);
     });
 
     // Quit when all windows are closed.
@@ -159,9 +153,17 @@ function initialize() {
     app.on('before-quit', e => {
         e.preventDefault();
         global.mockSettings = null;
-        proxy.close();
-        registerProxy(mainWindow, false);
-        app.exit();
+
+        if (proxy) {
+            proxy.close();
+        }
+        
+        registerProxy(null, false).then(() => {
+            app.exit();
+        }).catch(err => {
+            dialog.showErrorBox('错误', err.message);
+            app.exit();
+        });
     });
 
     app.setAsDefaultProtocolClient('mock');
