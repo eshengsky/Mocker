@@ -1,7 +1,7 @@
 $regKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
 $proxyServer = "http=127.0.0.1:2018;https=127.0.0.1:2018;"
 Set-ItemProperty -path $regKey ProxyServer -value $proxyServer
-Remove-ItemProperty -path $regKey -name ProxyOverride
+Set-ItemProperty -path $regKey ProxyOverride -value ""
 Set-ItemProperty -path $regKey ProxyEnable -value 1
 $wininet = Add-Type -memberDefinition @"
 [DllImport("wininet.dll")]

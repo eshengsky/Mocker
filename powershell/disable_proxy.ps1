@@ -1,6 +1,6 @@
 $regKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
 Set-ItemProperty -path $regKey ProxyEnable -value 0
-Remove-ItemProperty -path $regKey -name ProxyServer
+Set-ItemProperty -path $regKey ProxyServer -value ""
 $wininet = Add-Type -memberDefinition @"
 [DllImport("wininet.dll")]
 public static extern bool InternetSetOption(int hInternet, int dwOption, int lpBuffer, int dwBufferLength);  
