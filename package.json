@@ -1,7 +1,7 @@
 {
   "name": "mock",
   "productName": "Mock",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Mock response data, support for Browser and Node.js.",
   "private": true,
   "main": "main.js",
@@ -18,7 +18,11 @@
     "url": "git+https://github.com/eshengsky/Mock.git"
   },
   "keywords": [
-    "Mock"
+    "mock",
+    "mock-server",
+    "mock-data",
+    "electron",
+    "electron-app"
   ],
   "author": "Sky Sun",
   "license": "MIT",
@@ -38,7 +42,6 @@
     "font-awesome": "^4.7.0",
     "fuelux": "^3.16.2",
     "http-mitm-proxy": "^0.6.0",
-    "is-admin": "^2.1.1",
     "jquery": "^3.2.1",
     "monaco-editor": "^0.10.1",
     "request": "^2.83.0",
