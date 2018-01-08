@@ -1,12 +1,12 @@
-<img src="https://github.com/eshengsky/Mock/blob/master/static/image/mock.png" height="120" align="right">
+<img src="https://github.com/eshengsky/Mocker/blob/master/static/image/mocker.png" height="120" align="right">
 
-# Mock
+# Mocker
 
 HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用来模拟接口返回，便于开发及测试。  
 基于 [Node.js](https://nodejs.org) 和 [Electron](http://electron.atom.io/) 构建。
 
 ## 界面预览
-![image](https://raw.githubusercontent.com/eshengsky/Mock/master/static/image/preview.png)
+![image](https://raw.githubusercontent.com/eshengsky/Mocker/master/static/image/preview.png)
 
 ## 功能特色
 * 基于代理服务器机制并自动设置
@@ -16,7 +16,7 @@ HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用
 * 可以完全自定义响应的内容
 
 ## :gift: 应用下载
-https://github.com/eshengsky/Mock/releases
+https://github.com/eshengsky/Mocker/releases
 #### 注意
 * 目前仅支持 Windows 平台
 * 请确保你的 Windows 已安装 [PowerShell](https://www.microsoft.com/zh-cn/download/details.aspx?id=40855)（Win7 及以上版本系统通常已默认安装）
@@ -55,13 +55,13 @@ $ npm run package
 
 ## 常见问题
 * 如何模拟 https 请求？  
-首先点击 `Mock` 菜单栏 `SSL` - `下载证书`，将安全证书下载保存到任意位置，再点击菜单栏 `SSL` - `打开证书管理器`，在弹出的界面中选择 `受信任的根证书颁发机构` - `证书`，右击选择 `所有任务` - `导入`，要导入的文件请选择你刚刚下载的 `ca.pem` 文件，其他选项默认，完成导入。
+首先点击 `Mocker` 菜单栏 `SSL` - `下载证书`，将安全证书下载保存到任意位置，再点击菜单栏 `SSL` - `打开证书管理器`，在弹出的界面中选择 `受信任的根证书颁发机构` - `证书`，右击选择 `所有任务` - `导入`，要导入的文件请选择你刚刚下载的 `ca.pem` 文件，其他选项默认，完成导入。
 
 * 如何模拟本地服务器（如 Node.js 服务器）发送的请求？  
-`Mock` 工具是基于代理服务器的，所以你只需要将对应的代理配置成 `http://127.0.0.1:2018` 或 `https://127.0.0.1:2018` 即可。以 Node.js 服务器为例，将启动脚本设置为 `set HTTP_PROXY=http://127.0.0.1:2018&&node ./bin/www` 。
+`Mocker` 工具是基于代理服务器的，所以你只需要将对应的代理配置成 `http://127.0.0.1:2018` 或 `https://127.0.0.1:2018` 即可。以 Node.js 服务器为例，将启动脚本设置为 `set HTTP_PROXY=http://127.0.0.1:2018&&node ./bin/www` 。
 
-* 为什么关闭 Mock 后，无法正常上网了？  
-在正常情况下，`Mock` 会在退出程序前自动将系统代理重置为空，但遇到一些特殊情况（如手动杀死进程、直接关机、程序异常等），系统代理可能不会自动重置，此时你需要手动进行设置，方式：打开 `IE` - `Internet 选项` - `连接` - `局域网设置`，取消勾选代理服务器。
+* 为什么关闭 Mocker 后，无法正常上网了？  
+在正常情况下，`Mocker` 会在退出程序前自动将系统代理重置为空，但遇到一些特殊情况（如手动杀死进程、直接关机、程序异常等），系统代理可能不会自动重置，此时你需要手动进行设置，方式：打开 `IE` - `Internet 选项` - `连接` - `局域网设置`，取消勾选代理服务器。
 
 * 我发现无法正常使用，或者有异常错误提示？  
 尝试使用管理员身份运行软件（[链接](http://www.skysun.name/blog/os/set-default-to-run-as-administrator-in-windows)），如果问题依旧，请提Issue。

@@ -10,9 +10,9 @@ function getInstallerConfig() {
     const outPath = path.join(rootPath, 'out');
 
     return Promise.resolve({
-        appDirectory: path.join(outPath, 'Mock-win32-ia32'),
-        exe: 'Mock.exe',
-        iconUrl: 'https://raw.githubusercontent.com/eshengsky/Mock/master/static/image/mock.ico',
+        appDirectory: path.join(outPath, 'Mocker-win32-ia32'),
+        exe: 'Mocker.exe',
+        iconUrl: 'https://raw.githubusercontent.com/eshengsky/Mocker/master/static/image/mocker.ico',
         noMsi: true,
         outputDirectory: path.join(outPath, 'windows-installer'),
         setupExe: 'MockSetup.exe',

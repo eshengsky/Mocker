@@ -77,7 +77,7 @@ function initialize() {
             width: 700,
             minWidth: 500,
             height: 840,
-            icon: path.join(__dirname, `${process.platform === 'win32' ? '/static/image/mock.ico' : '/static/image/mock.png'}`),
+            icon: path.join(__dirname, `${process.platform === 'win32' ? '/static/image/mocker.ico' : '/static/image/mocker.png'}`),
             show: false
         };
 
@@ -166,9 +166,9 @@ function initialize() {
         });
     });
 
-    app.setAsDefaultProtocolClient('mock');
+    app.setAsDefaultProtocolClient('mocker');
 
-    // 外部链接 mock://xxx 打开，备用
+    // 外部链接 mocker://xxx 打开，备用
     app.on('open-url', (event, url) => {
         dialog.showMessageBox('Welcome Back', `You arrived from: ${url}`);
     });

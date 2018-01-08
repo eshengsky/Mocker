@@ -1,23 +1,24 @@
 {
-  "name": "mock",
-  "productName": "Mock",
-  "version": "2.2.0",
-  "description": "Mock response data, support for Browser and Node.js.",
+  "name": "mocker",
+  "productName": "Mocker",
+  "version": "3.0.0",
+  "description": "HTTP/HTTPS mock tool, support for Browser and local server.",
   "private": true,
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "dev": "electron . --debug",
     "package": "npm-run-all package:*",
-    "package:win": "electron-packager . --overwrite --platform=win32 --arch=ia32 --out=out --icon=static/image/mock.ico",
+    "package:win": "electron-packager . --overwrite --platform=win32 --arch=ia32 --out=out --icon=static/image/mocker.ico",
     "package:installer": "node ./installer.js",
     "package:inno": "cd inno && ISCC.exe ../setup.iss"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/eshengsky/Mock.git"
+    "url": "git+https://github.com/eshengsky/Mocker.git"
   },
   "keywords": [
+    "mocker",
     "mock",
     "mock-server",
     "mock-data",
@@ -27,9 +28,9 @@
   "author": "Sky Sun",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/eshengsky/Mock/issues"
+    "url": "https://github.com/eshengsky/Mocker/issues"
   },
-  "homepage": "https://github.com/eshengsky/Mock#readme",
+  "homepage": "https://github.com/eshengsky/Mocker#readme",
   "devDependencies": {
     "electron-prebuilt": "^1.2.2",
     "electron-winstaller": "^2.6.3",
@@ -39,6 +40,7 @@
   "dependencies": {
     "bootstrap": "^3.3.7",
     "bootstrap-switch": "^3.3.4",
+    "bootswatch": "^3.3.7",
     "font-awesome": "^4.7.0",
     "fuelux": "^3.16.2",
     "http-mitm-proxy": "^0.6.0",

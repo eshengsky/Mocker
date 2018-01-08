@@ -7,7 +7,7 @@ const { remote, ipcRenderer, shell } = require('electron');
 const app = remote.app;
 const settingsFilePath = path.resolve(app.getPath('userData'), 'settings.json');
 
-class Mock {
+class Mocker {
     constructor() {
         this.$btnNew = $('#btn-new');
         this.$tbBody = $('#table-body');
@@ -450,7 +450,7 @@ class Mock {
         // 菜单 - 检查更新
         ipcRenderer.on('update', () => {
             request({
-                url: 'https://api.github.com/repos/eshengsky/Mock/releases',
+                url: 'https://api.github.com/repos/eshengsky/Mocker/releases',
                 timeout: 3000,
                 headers: {
                     'User-Agent': 'Mozilla'
@@ -507,4 +507,4 @@ class Mock {
     }
 }
 
-new Mock();
+new Mocker();

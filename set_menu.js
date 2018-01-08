@@ -79,7 +79,7 @@ module.exports = () => {
         }, {
             label: '安装说明',
             click() {
-                electron.shell.openExternal('https://github.com/eshengsky/Mock#常见问题');
+                electron.shell.openExternal('https://github.com/eshengsky/Mocker#常见问题');
             }
         }]
     }, {
@@ -104,12 +104,12 @@ module.exports = () => {
         }, {
             label: '项目主页',
             click() {
-                electron.shell.openExternal('https://github.com/eshengsky/Mock');
+                electron.shell.openExternal('https://github.com/eshengsky/Mocker');
             }
         }, {
             label: '问题反馈',
             click() {
-                electron.shell.openExternal('https://github.com/eshengsky/Mock/issues');
+                electron.shell.openExternal('https://github.com/eshengsky/Mocker/issues');
             }
         }, {
             type: 'separator'
