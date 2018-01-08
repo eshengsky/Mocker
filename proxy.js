@@ -1,12 +1,13 @@
 const Proxy = require('http-mitm-proxy');
 const { app } = require('electron');
 const path = require('path');
+const log4js = require('log4js');
+const logger = log4js.getLogger();
 
 /**
  * 创建代理服务器
- * @param {*} mainWindow 
  */
-module.exports = mainWindow => {
+module.exports = () => {
     function getFullUrl(request) {
         const secure = request.connection.encrypted || request.headers['x-forwarded-proto'] === 'https';
         return `http${secure ? 's' : ''}://${request.headers.host}${request.url}`;
@@ -19,21 +20,13 @@ module.exports = mainWindow => {
         if (ctx && ctx.clientToProxyRequest) {
             url = getFullUrl(ctx.clientToProxyRequest);
         }
-        console.error(`${errorKind} on ${url}:`, err);
-        mainWindow.webContents.send('log', {
-            type: 'error',
-            message: `${errorKind} on ${url}: ${err.message}`
-        });
+        logger.error(`[PROXY] ${errorKind} on ${url}:`, err);
     });
 
     proxy.onRequest((ctx, callback) => {
         const req = ctx.clientToProxyRequest;
         const fullUrl = getFullUrl(req);
-        console.log(`${req.method.toUpperCase()} ${fullUrl}`);
-        mainWindow.webContents.send('log', {
-            type: 'info',
-            message: `${req.method.toUpperCase()} ${fullUrl}`
-        });
+        logger.info(`[PROXY] ${req.method.toUpperCase()} ${fullUrl}`);
 
         if (ctx.clientToProxyRequest.headers.host === '127.0.0.1:2018') {
             ctx.proxyToClientResponse.end('Mock Server is OK!');
@@ -46,11 +39,7 @@ module.exports = mainWindow => {
             && (t.active === '1'));
         if (findOne) {
             // 触发了配置
-            console.log('Trigger Rule:', findOne);
-            mainWindow.webContents.send('log', {
-                type: 'info',
-                message: `触发规则：${JSON.stringify(findOne)}`
-            });
+            logger.info('匹配到规则：', findOne);
             const responseCode = findOne.code;
             const responseType = findOne.mime;
             const responseHeaders = findOne.headers;
@@ -94,6 +83,4 @@ module.exports = mainWindow => {
         }
     });
     return proxy;
-}
-
-
+};

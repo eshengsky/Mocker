@@ -2,14 +2,37 @@
 const path = require('path');
 const fs = require('fs');
 const electron = require('electron');
+const app = electron.app;
 const ipc = electron.ipcMain;
 const dialog = electron.dialog;
+const log4js = require('log4js');
+const logPath = path.resolve(app.getPath('userData'), 'log.log');
+log4js.configure({
+    appenders: {
+        console: {
+            type: 'console',
+        },
+
+        file: {
+            type: 'file',
+            filename: logPath,
+            maxLogSize: 10 * 1024 * 1024,
+            backups: 3,
+            compress: true
+        }
+    },
+    categories: {
+        default: { 
+            appenders: ['console', 'file'],
+            level: 'debug'
+        }
+    }
+});
+const logger = log4js.getLogger();
+
 const setMenu = require('./set_menu');
 const createProxy = require('./proxy');
 const registerProxy = require('./registry');
-
-// Module to control application life.
-const app = electron.app;
 
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
@@ -25,19 +48,11 @@ const settingsFilePath = path.resolve(app.getPath('userData'), 'settings.json');
 global.mockSettings = [];
 
 process.on('uncaughtException', err => {
-    console.error(err);
-    mainWindow.webContents.send('log', {
-        type: 'error',
-        message: `uncaughtException: ${err.stack}`
-    });
+    logger.error('[uncaughtException]', err);
 });
 
 process.on('unhandledRejection', err => {
-    console.error(err);
-    mainWindow.webContents.send('log', {
-        type: 'error',
-        message: `unhandledRejection: ${err.message}`
-    });
+    logger.error('[unhandledRejection]', err);
 });
 
 function initialize() {
@@ -127,10 +142,10 @@ function initialize() {
         setMenu();
 
         // 创建代理服务器
-        proxy =  createProxy(mainWindow);
+        proxy = createProxy(mainWindow);
 
         // 注册代理信息
-        registerProxy(mainWindow);
+        registerProxy();
     });
 
     // Quit when all windows are closed.
@@ -157,8 +172,8 @@ function initialize() {
         if (proxy) {
             proxy.close();
         }
-        
-        registerProxy(null, false).then(() => {
+
+        registerProxy(false).then(() => {
             app.exit();
         }).catch(err => {
             dialog.showErrorBox('错误', err.message);

@@ -69,10 +69,6 @@ input::-webkit-inner-spin-button{
     transition: all 0.5s;
 }
 
-.log-panel {
-    display: none;
-}
-
 .input-group-btn > .btn {
     border: 0;
     box-shadow: none;

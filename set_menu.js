@@ -5,6 +5,7 @@ const cp = require('child_process');
 const Menu = electron.Menu;
 const app = electron.app;
 const dialog = electron.dialog;
+const logPath = path.resolve(app.getPath('userData'), 'log.log');
 
 module.exports = () => {
     const template = [{
@@ -117,6 +118,11 @@ module.exports = () => {
             label: '切换开发人员工具',
             accelerator: 'F12',
             role: 'toggledevtools'
+        }, {
+            label: '查看调试日志',
+            click() {
+                electron.shell.openItem(logPath);
+            }
         }, {
             type: 'separator'
         }, {
