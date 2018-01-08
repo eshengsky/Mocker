@@ -105,7 +105,7 @@ NewFolderName=新建文件夹
 
 ; *** "Welcome" wizard page
 WelcomeLabel1=欢迎使用[name]安装向导
-WelcomeLabel2=本向导将在您的电脑上安装[name/ver]%n%n[name]的详细介绍和源码请访问：%nhttps://github.com/eshengsky/Mock%n%n建议您在继续之前关闭其他所有应用程序。
+WelcomeLabel2=本向导将在您的电脑上安装[name/ver]%n%n[name]的详细介绍和源码请访问：%nhttps://github.com/eshengsky/Mocker%n%n建议您在继续之前关闭其他所有应用程序。
 
 ; *** "Password" wizard page
 WizardPassword=密码
