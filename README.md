@@ -2,7 +2,7 @@
 
 # Mock
 
-HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用来模拟接口返回，提高开发及测试效率。  
+HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用来模拟接口返回，便于开发及测试。  
 基于 [Node.js](https://nodejs.org) 和 [Electron](http://electron.atom.io/) 构建。
 
 ## 界面预览
@@ -19,10 +19,11 @@ HTTP/HTTPS 模拟响应工具，支持浏览器和本地服务器请求，可用
 https://github.com/eshengsky/Mock/releases
 #### 注意
 * 目前仅支持 Windows 平台
-* 请确保已安装 [PowerShell](https://www.microsoft.com/zh-cn/download/details.aspx?id=40855)
+* 请确保你的 Windows 已安装 [PowerShell](https://www.microsoft.com/zh-cn/download/details.aspx?id=40855)（Win7 及以上版本系统通常已默认安装）
+* 尽可能以管理员身份运行应用
 
 ## 本地调试
-请先确保已成功安装 [Node.js](https://nodejs.org/en/download/) 和 [NPM](https://www.npmjs.com/)。  
+首先安装 [Node.js](https://nodejs.org/en/download/) 和 [NPM](https://www.npmjs.com/)。  
 #### 安装依赖包
 ```shell
 $ npm install
