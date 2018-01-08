@@ -8,6 +8,7 @@ html, body {
 
 body {
     font-size: 14px;
+    overflow-x: hidden;
 }
 
 textarea, textarea.form-control, input.form-control, input[type=text], input[type=password], input[type=email], input[type=number], [type=text].form-control, [type=password].form-control, [type=email].form-control, [type=tel].form-control, [contenteditable].form-control {
@@ -45,6 +46,10 @@ table tbody + tfoot th {
     text-align: center;
 }
 
+.btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn.active.focus {
+    outline: none;
+}
+
 .btn-action:hover, .btn-action:focus {
     outline: none;
 }
@@ -60,13 +65,13 @@ input::-webkit-inner-spin-button{
     position: absolute;
     width: 100%;
     background: #fff;
-    box-shadow: 1px -8px 8px #111;
 }
 
 .edit-panel {
     display: none;
     left: 101%;
     transition: all 0.5s;
+    box-shadow: -1px 0 5px #999;
 }
 
 .input-group-btn > .btn {
@@ -148,6 +153,7 @@ input::-webkit-inner-spin-button{
 
 .res-panel {
     margin-top: 35px;
+    margin-bottom: 60px;
 }
 
 .bootstrap-switch {
@@ -165,10 +171,6 @@ input::-webkit-inner-spin-button{
 
 .swal2-confirm.btn-danger {
     background: #ff4351;
-}
-
-.btn:focus {
-    outline: none;
 }
 
 #btn-new {
@@ -226,4 +228,18 @@ input::-webkit-inner-spin-button{
 
 .btn-save {
     width: 89px;
+    margin-left: 3px;
+}
+
+.action-bar {
+    display: none;
+    left: 101%;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 0 10px 20px;
+    background: #fafafa;
+    box-shadow: 0px -1px 5px #999;
+    z-index: 10;
+    transition: all 0.5s;
 }

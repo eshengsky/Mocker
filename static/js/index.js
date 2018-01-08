@@ -26,6 +26,7 @@ class Mocker {
         this.$selectMode = $('#select-mode');
         this.$textDelay = $('#text-delay');
         this.$btnSave = $('.btn-save');
+        this.$actionBar = $('.action-bar');
         this.$uid = $('#uid');
         this.defaultEditorHeight = 150;
         swal.setDefaults({
@@ -338,7 +339,12 @@ class Mocker {
                 this.$editPanel.css('left', '0');
                 setTimeout(() => {
                     this.initMockDetails();
+                    this.$actionBar.show();
                 }, 500);
+            });
+
+            this.$actionBar.show(0, () => {
+                this.$actionBar.css('left', '0');
             });
         });
 
@@ -349,6 +355,9 @@ class Mocker {
             setTimeout(() => {
                 this.initMockDetails(uid);
             }, 500);
+            this.$actionBar.show(0, () => {
+                this.$actionBar.css('left', '0');
+            });
         };
 
         window.delMock = uid => {
@@ -363,8 +372,10 @@ class Mocker {
 
         this.$btnBack.on('click', () => {
             this.$editPanel.css('left', '101%');
+            this.$actionBar.css('left', '101%');
             setTimeout(() => {
                 this.$editPanel.hide();
+                this.$actionBar.hide();
                 this.resetMockDetails();
             }, 500);
             this.initMockList();
