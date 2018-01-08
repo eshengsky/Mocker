@@ -45,6 +45,10 @@ table tbody + tfoot th {
     text-align: center;
 }
 
+.btn-action:hover, .btn-action:focus {
+    outline: none;
+}
+
 input::-webkit-outer-spin-button,  
 input::-webkit-inner-spin-button{  
     -webkit-appearance: none !important;  
@@ -175,10 +179,6 @@ input::-webkit-inner-spin-button{
     margin: 0 0 8px 15px;
 }
 
-.button-borderless.button-small {
-    font-size: 18px;
-}
-
 .swal2-popup .swal2-title {
     font-size: 23px !important;
 }
@@ -190,4 +190,44 @@ input::-webkit-inner-spin-button{
 
 .changelog ul {
     list-style-type: disc;
+}
+
+.btn-action {
+    font-size: 18px;
+    height: 31.6px;
+    line-height: 31.6px;
+    color: #1b9af7;
+    width: 30px;
+    background: none;
+    border: none;
+    padding: 0 8px !important;
+    cursor: pointer;
+    transition-property: all;
+    -webkit-transition-duration: .3s;
+    transition-duration: .3s;
+}
+
+.btn-edit {
+    color: #1b9af7;
+}
+
+.btn-del {
+    color: #ff4351;
+}
+
+.btn-action:active,
+.btn-action.active,
+.btn-action.is-active {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    text-shadow: none;
+    -webkit-transition-property: all;
+    transition-property: all;
+    -webkit-transition-duration: .3s;
+    transition-duration: .3s;
+    opacity: .3;
+}
+
+.btn-save {
+    width: 89px;
 }

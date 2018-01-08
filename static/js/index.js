@@ -64,8 +64,8 @@ class Mocker {
                         <td><input data-uid="${item.id}" type="checkbox" ${item.active === '1' ? 'checked' : ''}></td>
                         <td align="center"><span class="list-method">${item.method === 'ALL' ? '不限' : item.method}</span></td>
                         <td><span title="${item.uri}" class="list-uri">${item.uri}</span></td>
-                        <td align="center"><button class="button button-primary button-borderless button-box button-small" title="修改" onclick="editMock('${item.id}');"><i class="fa fa-pencil"></i></button>
-                        <button class="button button-caution button-borderless button-box button-small" title="删除" onclick="delMock('${item.id}');"><i class="fa fa-trash-o"></i></button></td>
+                        <td align="center"><button class="btn-action btn-edit" title="修改" onclick="editMock('${item.id}');"><i class="fa fa-pencil"></i></button>
+                        <button class="btn-action btn-del" title="删除" onclick="delMock('${item.id}');"><i class="fa fa-trash-o"></i></button></td>
                     </tr>`;
                 });
                 this.$tbBody.html(html);
@@ -216,12 +216,10 @@ class Mocker {
                     return;
                 }
 
-                swal({
-                    text: '保存成功',
-                    type: 'success',
-                    showConfirmButton: false,
-                    timer: 800
-                });
+                this.$btnSave.html('<i class="fa fa-check"></i> 已保存');
+                setTimeout(() => {
+                    this.$btnSave.html('保存修改');
+                }, 2000);
 
                 // 如果保存成功，则对 id 重新赋值
                 this.$uid.val(updateData.id);
