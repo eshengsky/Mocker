@@ -28,18 +28,21 @@ module.exports = () => {
         const fullUrl = getFullUrl(req);
         logger.info(`[PROXY] ${req.method.toUpperCase()} ${fullUrl}`);
 
-        if (ctx.clientToProxyRequest.headers.host === '127.0.0.1:2018') {
+        if (ctx.clientToProxyRequest.headers.host === '127.0.0.1:28369') {
             ctx.proxyToClientResponse.end('Mock Server is OK!');
             return;
         }
 
         // 判断是否能找到对应的配置
+        if (!global.mockSettings) {
+            return;
+        }
         const findOne = global.mockSettings.find(t => (fullUrl.indexOf(t.uri) >= 0)
             && (t.method === 'ALL' || (t.method.toUpperCase() === req.method.toUpperCase()))
             && (t.active === '1'));
         if (findOne) {
             // 触发了配置
-            logger.info('匹配到规则：', findOne);
+            logger.info('Match to rule:', findOne);
             const responseCode = findOne.code;
             const responseType = findOne.mime;
             const responseHeaders = findOne.headers;
@@ -48,8 +51,8 @@ module.exports = () => {
 
             ctx.use(Proxy.gunzip);
             ctx.proxyToClientResponse.statusCode = responseCode;
-            ctx.proxyToClientResponse.setHeader('mock-data', 'true');
-            ctx.proxyToClientResponse.setHeader('content-type', responseType);
+            ctx.proxyToClientResponse.setHeader('Mock-Data', 'true');
+            ctx.proxyToClientResponse.setHeader('Content-Type', responseType);
             if (responseHeaders) {
                 const headerArr = responseHeaders.split('\n');
                 headerArr.forEach(item => {
@@ -75,11 +78,11 @@ module.exports = () => {
     });
 
     proxy.listen({ 
-        port: 2018,
+        port: 28369,
         sslCaDir: path.resolve(app.getPath('userData'), './SSL')
     }, err => {
         if (err) {
-            require('electron').dialog.showErrorBox('错误', err.stack ? err.stack : err.message);
+            require('electron').dialog.showErrorBox('Error:', err.stack ? err.stack : err.message);
         }
     });
     return proxy;

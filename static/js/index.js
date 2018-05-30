@@ -6,6 +6,28 @@ const showdown = require('showdown');
 const { remote, ipcRenderer, shell } = require('electron');
 const app = remote.app;
 const settingsFilePath = path.resolve(app.getPath('userData'), 'settings.json');
+const i18n = require('i18n');
+const localeArray = ['en-US', 'zh-CN', 'zh-TW'];
+i18n.configure({
+    locales: localeArray,
+    directory: path.join(__dirname, './locales'),
+    objectNotation: true
+});
+let locale;
+try {
+    let data = fs.readFileSync(path.resolve(app.getPath('userData'), 'locale.json'), 'utf8');
+    data = JSON.parse(data);
+    locale = data.locale;
+} catch (e) {
+
+}
+if (!locale) {
+    locale = app.getLocale();
+}
+if (localeArray.indexOf(locale) === -1) {
+    locale = 'en-US';
+}
+i18n.setLocale(locale);
 
 class Mocker {
     constructor() {
@@ -30,7 +52,7 @@ class Mocker {
         this.$uid = $('#uid');
         this.defaultEditorHeight = 150;
         swal.setDefaults({
-            cancelButtonText: '取消',
+            cancelButtonText: i18n.__('cancel'),
             buttonsStyling: false,
             confirmButtonClass: 'btn btn-primary',
             cancelButtonClass: 'btn btn-default',
@@ -40,6 +62,7 @@ class Mocker {
     }
 
     init() {
+        this.initLang();
         this.initMockList();
         this.bindEvents();
     }
@@ -52,6 +75,18 @@ class Mocker {
         return encodeURI(`file://${pathName}`);
     }
 
+    initLang() {
+        document.querySelectorAll('[locale]').forEach(el => {
+            const lc = el.getAttribute('locale');
+            const name = i18n.__(lc);
+            el.textContent = name;
+            console.log(locale, lc,i18n.__('new'))
+        });
+        document.querySelector('#text-uri').setAttribute('placeholder', i18n.__('uri_placeholder'));
+        document.querySelector('#text-header').setAttribute('placeholder', i18n.__('header_placeholder'));
+        $('.split-title').css('letter-spacing', '0');
+    }
+
     /**
      * 初始化列表
      */
@@ -62,43 +97,19 @@ class Mocker {
                 data.forEach(item => {
                     html +=
                         `<tr>
-                        <td><input data-uid="${item.id}" type="checkbox" ${item.active === '1' ? 'checked' : ''}></td>
-                        <td align="center"><span class="list-method">${item.method === 'ALL' ? '不限' : item.method}</span></td>
+                        <td align="center"><span class="list-method">${item.method === 'ALL' ? i18n.__('all') : item.method}</span></td>
                         <td><span title="${item.uri}" class="list-uri">${item.uri}</span></td>
-                        <td align="center"><button class="btn-action btn-edit" title="修改" onclick="editMock('${item.id}');"><i class="fa fa-pencil"></i></button>
-                        <button class="btn-action btn-del" title="删除" onclick="delMock('${item.id}');"><i class="fa fa-trash-o"></i></button></td>
+                        <td class="td-active"><input data-uid="${item.id}" type="checkbox" class="cb-active" ${item.active === '1' ? 'checked' : ''} onchange="activeRule(this)"></td>
+                        <td align="center"><button class="btn-action btn-edit" title="${i18n.__('modify')}" onclick="editMock('${item.id}');"><i class="fa fa-pencil"></i></button>
+                        <button class="btn-action btn-del" title="${i18n.__('del')}" onclick="delMock('${item.id}');"><i class="fa fa-trash-o"></i></button></td>
                     </tr>`;
                 });
                 this.$tbBody.html(html);
-                $("[type='checkbox']").bootstrapSwitch({
-                    size: 'small',
-                    onColor: 'success',
-                    onText: '开',
-                    offText: '关',
-                    onSwitchChange: (event, state) => {
-                        const active = state === true ? '1' : '0';
-                        const uid = event.currentTarget.dataset.uid;
-                        this.getSettings().then(data => {
-                            const findOne = data.find(t => t.id === uid);
-                            if (findOne) {
-                                findOne.active = active;
-                                fs.writeFile(settingsFilePath, JSON.stringify(data, null, 4), err => {
-                                    if (err) {
-                                        swal({
-                                            title: '保存出错',
-                                            text: err.message,
-                                            confirmButtonText: '关闭',
-                                            type: 'error'
-                                        });
-                                        return;
-                                    }
-
-                                    // 告诉主线程配置已改
-                                    ipcRenderer.send('settingsModified', '');
-                                });
-                            }
-                        });
-                    }
+                document.querySelectorAll('.cb-active').forEach(el => {
+                    const switchery = new Switchery(el, {
+                        color: '#56CC9D',
+                        size: 'small'
+                    });
                 });
             }
         }).catch();
@@ -209,18 +220,18 @@ class Mocker {
             fs.writeFile(settingsFilePath, JSON.stringify(data, null, 4), err => {
                 if (err) {
                     swal({
-                        title: '保存出错',
+                        title: i18n.__('save_err'),
                         text: err.message,
-                        confirmButtonText: '关闭',
+                        confirmButtonText: i18n.__('close'),
                         type: 'error'
                     });
                     return;
                 }
 
-                this.$btnSave.html('<i class="fa fa-check"></i> 已保存');
+                this.$btnSave.html(`<i class="fa fa-check"></i> ${i18n.__('saved')}`);
                 setTimeout(() => {
-                    this.$btnSave.html('保存修改');
-                }, 2000);
+                    this.$btnSave.html(i18n.__('save'));
+                }, 1000);
 
                 // 如果保存成功，则对 id 重新赋值
                 this.$uid.val(updateData.id);
@@ -230,9 +241,9 @@ class Mocker {
             });
         }).catch(err => {
             swal({
-                title: '保存出错',
+                title: i18n.__('save_err'),
                 text: err.message,
-                confirmButtonText: '关闭',
+                confirmButtonText: i18n.__('closed'),
                 type: 'error'
             });
         });
@@ -290,12 +301,12 @@ class Mocker {
 
     deleteMockItem(uid) {
         swal({
-            text: '确定要删除该项吗？',
+            text: i18n.__('del_confirm'),
             type: 'warning',
             showCancelButton: true,
             confirmButtonClass: 'btn btn-danger',
             confirmButtonColor: '#ff4351',
-            confirmButtonText: '确定删除',
+            confirmButtonText: i18n.__('del_sure'),
             showLoaderOnConfirm: true,
         }).then(result => {
             if (result.value) {
@@ -306,19 +317,19 @@ class Mocker {
                         fs.writeFile(settingsFilePath, JSON.stringify(data, null, 4), err => {
                             if (err) {
                                 swal({
-                                    title: '出错了',
+                                    title: i18n.__('has_err'),
                                     text: err.message,
-                                    confirmButtonText: '关闭',
+                                    confirmButtonText: i18n.__('close'),
                                     type: 'error'
                                 });
                                 return;
                             }
                             this.initMockList();
                             swal({
-                                text: '删除成功',
+                                text: i18n.__('del_success'),
                                 type: 'success',
                                 showConfirmButton: false,
-                                timer: 1500
+                                timer: 800
                             });
 
                             // 告诉主线程配置已改
@@ -347,6 +358,31 @@ class Mocker {
                 this.$actionBar.css('left', '0');
             });
         });
+
+        window.activeRule = el => {
+            const active = el.checked ? '1' : '0';
+            const uid = el.dataset.uid;
+            this.getSettings().then(data => {
+                const findOne = data.find(t => t.id === uid);
+                if (findOne) {
+                    findOne.active = active;
+                    fs.writeFile(settingsFilePath, JSON.stringify(data, null, 4), err => {
+                        if (err) {
+                            swal({
+                                title: i18n.__('save_err'),
+                                text: err.message,
+                                confirmButtonText: i18n.__('close'),
+                                type: 'error'
+                            });
+                            return;
+                        }
+
+                        // 告诉主线程配置已改
+                        ipcRenderer.send('settingsModified', '');
+                    });
+                }
+            });
+        };
 
         window.editMock = uid => {
             this.$editPanel.show(0, () => {
@@ -467,9 +503,9 @@ class Mocker {
             }, (err, response, body) => {
                 if (err) {
                     swal({
-                        title: '检查更新失败',
+                        title: i18n.__('update_err'),
                         text: err.message,
-                        confirmButtonText: '关闭',
+                        confirmButtonText: i18n.__('close'),
                         type: 'error'
                     });
                     return;
@@ -486,12 +522,12 @@ class Mocker {
                     changelog = converter.makeHtml(changelog);
 
                     swal({
-                        title: '发现新版本',
+                        title: i18n.__('update_new'),
                         html: `<div class="changelog"><p>${name}</p>${changelog}</div>`,
                         showCancelButton: true,
                         confirmButtonClass: 'btn btn-success',
-                        confirmButtonText: '立即下载',
-                        cancelButtonText: '取消',
+                        confirmButtonText: i18n.__('down_now'),
+                        cancelButtonText: i18n.__('cancel'),
                         type: 'info'
                     }, () => {
                         const assets = data[0].assets;
@@ -501,10 +537,10 @@ class Mocker {
                 } else {
                     // 没有更新版本
                     swal({
-                        title: '没有更新',
-                        text: `你已是最新版本 v${app.getVersion()}`,
+                        title: i18n.__('no_update'),
+                        text: `${i18n.__('you_are_latest')} v${app.getVersion()}`,
                         type: 'success',
-                        confirmButtonText: '关闭'
+                        confirmButtonText: i18n.__('close')
                     });
                 }
             });

@@ -9,10 +9,10 @@ module.exports = (enable = true) => {
             const enableProxyFile = path.join(__dirname, './powershell/enable_proxy.ps1');
             cp.exec(`powershell -ExecutionPolicy ByPass -File "${enableProxyFile}"`, err => {
                 if (err) {
-                    logger.error('启用代理出错：', err);
+                    logger.error('Enable proxy error:', err);
                     reject(err);
                 } else {
-                    logger.info('启用代理成功！');
+                    logger.info('Enable proxy success!');
                     resolve();
                 }
             });
@@ -20,10 +20,10 @@ module.exports = (enable = true) => {
             const disableProxyFile = path.join(__dirname, './powershell/disable_proxy.ps1');
             cp.exec(`powershell -ExecutionPolicy ByPass -File "${disableProxyFile}"`, err => {
                 if (err) {
-                    logger.error('关闭代理出错：', err);
+                    logger.error('Disable proxy error:', err);
                     reject(err);
                 } else {
-                    logger.info('关闭代理成功！');
+                    logger.info('Disable proxy success!');
                     resolve();
                 }
             });

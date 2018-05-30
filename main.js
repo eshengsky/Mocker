@@ -5,6 +5,13 @@ const electron = require('electron');
 const app = electron.app;
 const ipc = electron.ipcMain;
 const dialog = electron.dialog;
+const i18n = require('i18n');
+const localeArray = ['en-US', 'zh-CN', 'zh-TW'];
+i18n.configure({
+    locales: localeArray,
+    directory: `${__dirname}/locales`,
+    objectNotation: true
+});
 const log4js = require('log4js');
 const logPath = path.resolve(app.getPath('userData'), 'log.log');
 log4js.configure({
@@ -43,6 +50,7 @@ const debug = /--debug/.test(process.argv[2]);
 let mainWindow = null;
 let proxy = null;
 const settingsFilePath = path.resolve(app.getPath('userData'), 'settings.json');
+const localeFilePath = path.resolve(app.getPath('userData'), 'locale.json');
 
 // mock 设置，默认为空数组
 global.mockSettings = [];
@@ -92,8 +100,10 @@ function initialize() {
             width: 700,
             minWidth: 500,
             height: 840,
+            center: true,
             icon: path.join(__dirname, `${process.platform === 'win32' ? '/static/image/mocker.ico' : '/static/image/mocker.png'}`),
-            show: false
+            show: false,
+            opacity: 0.95
         };
 
         // Create the browser window.
@@ -120,9 +130,36 @@ function initialize() {
         });
     }
 
+    function getLocale() {
+        // get locale from config if exists
+        let locale;
+        try {
+            let data = fs.readFileSync(localeFilePath, 'utf8');
+            data = JSON.parse(data);
+            locale = data.locale;
+        } catch (e) {
+
+        }
+
+        // then try get current env locale
+        if (!locale) {
+            locale = app.getLocale();
+        }
+
+        // if not in the 3 locales, return en-US
+        if (localeArray.indexOf(locale) === -1) {
+            locale = 'en-US';
+        }
+        return locale;
+    }
+
     // This method will be called when Electron has finished
     // initialization and is ready to create browser windows.
     app.on('ready', () => {
+        // 设置语言
+        const locale = getLocale();
+        i18n.setLocale(locale);
+
         // 更新mock配置
         getLatestSettings().then(data => {
             global.mockSettings = data;
@@ -139,7 +176,7 @@ function initialize() {
         createWindow();
 
         // 设置菜单
-        setMenu();
+        setMenu(i18n, locale);
 
         // 创建代理服务器
         proxy = createProxy(mainWindow);
@@ -176,7 +213,7 @@ function initialize() {
         registerProxy(false).then(() => {
             app.exit();
         }).catch(err => {
-            dialog.showErrorBox('错误', err.message);
+            dialog.showErrorBox('Error:', err.message);
             app.exit();
         });
     });

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Mocker</title>
     <link rel="stylesheet" href="./node_modules/bootswatch/paper/bootstrap.css">
-    <link rel="stylesheet" href="./node_modules/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css">
+    <link rel="stylesheet" href="./node_modules/switchery/dist/switchery.min.css">
     <link rel="stylesheet" href="./node_modules/fuelux/dist/css/fuelux.css">
     <link rel="stylesheet" href="./node_modules/font-awesome/css/font-awesome.css">
     <link rel="stylesheet" href="./node_modules/monaco-editor/min/vs/editor/editor.main.css">
@@ -14,44 +14,43 @@
 
 <body class="fuelux">
     <div class="list-panel col-md-12">
-        <a class="btn btn-primary" id="btn-new"><i class="fa fa-plus"></i> 新建</a>
+        <a class="btn btn-primary" id="btn-new"><i class="fa fa-plus"></i> <span locale="new"></span></a>
         <table class="table">
             <thead>
                 <tr>
-                    <th width="100px">开关</th>
-                    <th width="100px">请求方式</th>
-                    <th>请求链接</th>
-                    <th width="100px">操作</th>
+                    <th width="80px" locale="req_method"></th>
+                    <th locale="req_url"></th>
+                    <th width="51px" locale="active"></th>
+                    <th width="100px" locale="operate"></th>
                 </tr>
             </thead>
             <tbody id="table-body"></tbody>
             <tfoot>
                 <tr>
-                    <th colspan="4">无数据</th>
+                    <th colspan="4" locale="nodata"></th>
                 </tr>
             </tfoot>
         </table>
     </div>
     <div class="edit-panel col-md-12">
         <div class="panel req-panel">
-            <p class="split-title">匹配请求</p>
+            <p class="split-title" locale="match_req"></p>
             <div class="panel-body">
                 <div class="form-group" id="form-uri">
-                    <label for="text-uri">请求链接</label>
-                    <input class="form-control" placeholder="模糊匹配" id="text-uri">
+                    <label for="text-uri" locale="req_url"></label>
+                    <input class="form-control" placeholder="" id="text-uri">
                 </div>
                 <div class="form-group">
-                    <label>请求方式</label>
+                    <label locale="req_method"></label>
                     <div class="input-group">
                         <div class="btn-group selectlist" data-resize="auto" data-initialize="selectlist" id="select-method">
                             <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
                                 <span class="selected-label">&nbsp;</span>
                                 <span class="caret"></span>
-                                <span class="sr-only">请求方式</span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li data-value="ALL">
-                                    <a href="#">不限</a>
+                                    <a href="#" locale="all"></a>
                                 </li>
                                 <li data-value="GET">
                                     <a href="#">GET</a>
@@ -85,10 +84,10 @@
             </div>
         </div>
         <div class="panel res-panel">
-            <p class="split-title">模拟响应</p>
+            <p class="split-title" locale="mock_res"></p>
             <div class="panel-body">
                 <div class="form-group">
-                    <label for="text-status">响应状态码</label>
+                    <label for="text-status" locale="res_code"></label>
                     <div class="input-group input-append dropdown combobox" data-initialize="combobox" id="select-status">
                         <input type="number" class="form-control" id="text-status">
                         <div class="input-group-btn">
@@ -113,7 +112,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="text-mime">响应类型</label>
+                    <label for="text-mime" locale="res_mime"></label>
                     <div class="input-group input-append dropdown combobox" data-initialize="combobox" id="select-mime" style="width: 100%;">
                         <input type="text" class="form-control" id="text-mime">
                         <div class="input-group-btn">
@@ -141,25 +140,25 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="text-header">自定义响应头</label>
-                    <textarea class="form-control" placeholder="key: value 格式，多个键值对用换行隔开" rows="3" id="text-header"></textarea>
+                    <label for="text-header" locale="res_headers"></label>
+                    <textarea class="form-control" placeholder="" rows="3" id="text-header"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="text-body">响应内容</label>
+                    <label for="text-body" locale="res_body"></label>
                     <div class="lang-mode-wrap">
                         <select class="form-control input-sm" id="select-mode">
                             <option value="json">JSON</option>
                             <option value="html">HTML</option>
                             <option value="javascript">JavaScript</option>
                             <option value="css">CSS</option>
-                            <option value="plaintext">纯文本</option>
+                            <option value="plaintext" locale="plaintext"></option>
                         </select>
-                        <p>语言模式：</p>
+                        <p locale="lang_mode"></p>
                     </div>
                     <div id="text-body"></div>
                 </div>
                 <div class="form-group">
-                    <label for="text-delay">响应延迟</label>
+                    <label for="text-delay" locale="res_delay"></label>
                     <div class="input-group">
                         <input type="number" class="form-control" id="text-delay" value="0">
                         <div class="input-group-addon">ms</div>
@@ -168,8 +167,8 @@
             </div>
         </div>
         <div class="action-bar">
-            <button class="btn btn-default btn-back">返回</button>
-            <button class="btn btn-success btn-save">保存修改</button>
+            <button class="btn btn-default btn-back" locale="back"></button>
+            <button class="btn btn-success btn-save" locale="save"></button>
         </div>
         <input type="hidden" id="uid" value="">
         <input type="hidden" id="active" value="">
@@ -185,7 +184,7 @@
         global.require = nodeRequire;
     </script>
     <script src="./node_modules/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="./node_modules/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
+    <script src="./node_modules/switchery/dist/switchery.min.js"></script>
     <script src="./node_modules/fuelux/dist/js/fuelux.js"></script>
     <script src="./node_modules/sweetalert2/dist/sweetalert2.all.js"></script>
     <script src="./static/js/index.js"></script>

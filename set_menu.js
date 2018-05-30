@@ -6,12 +6,27 @@ const Menu = electron.Menu;
 const app = electron.app;
 const dialog = electron.dialog;
 const logPath = path.resolve(app.getPath('userData'), 'log.log');
+const localeFilePath = path.resolve(app.getPath('userData'), 'locale.json');
 
-module.exports = () => {
+function setLocale(locale) {
+    try {
+        let data = {};
+        if (fs.existsSync(localeFilePath)) {
+            data = fs.readFileSync(localeFilePath, 'utf8');
+            data = JSON.parse(data);
+        }
+        data.locale = locale;
+        fs.writeFileSync(localeFilePath, JSON.stringify(data, null, 4), 'utf8');
+    } catch (e) {
+
+    }
+}
+
+module.exports = (i18n, locale) => {
     const template = [{
-        label: '文件',
+        label: i18n.__('file'),
         submenu: [{
-            label: '新建',
+            label: i18n.__('new'),
             accelerator: 'CmdOrCtrl+N',
             click(item, focusedWindow) {
                 // send to renderer
@@ -20,47 +35,77 @@ module.exports = () => {
         }, {
             type: 'separator'
         }, {
-            label: '重新加载',
+            label: i18n.__('reload'),
             accelerator: 'CmdOrCtrl+R',
             click() {
                 app.relaunch();
                 app.quit();
             }
         }, {
-            label: '退出',
+            label: i18n.__('exit'),
             accelerator: 'CmdOrCtrl+W',
             click() {
                 app.quit();
             }
         }]
     }, {
-        label: '编辑',
+        label: i18n.__('edit'),
         submenu: [{
-            label: '复制',
+            label: i18n.__('copy'),
             accelerator: 'CmdOrCtrl+C',
             role: 'copy'
         }, {
-            label: '剪切',
+            label: i18n.__('cut'),
             accelerator: 'CmdOrCtrl+X',
             role: 'cut'
         }, {
-            label: '粘贴',
+            label: i18n.__('paste'),
             accelerator: 'CmdOrCtrl+V',
             role: 'paste'
         }, {
-            label: '全选',
+            label: i18n.__('select_all'),
             accelerator: 'CmdOrCtrl+A',
             role: 'selectall'
         }]
     }, {
+        label: 'Language',
+        submenu: [{
+            label: 'English',
+            type: 'checkbox',
+            checked: locale === 'en-US',
+            click() {
+                setLocale('en-US');
+                app.relaunch();
+                app.exit(0);
+            }
+        }, {
+            label: '简体中文',
+            type: 'checkbox',
+            checked: locale === 'zh-CN',
+            click() {
+                setLocale('zh-CN');
+                app.relaunch();
+                app.exit(0);
+            }
+        }, {
+            label: '繁體中文',
+            type: 'checkbox',
+            checked: locale === 'zh-TW',
+            click() {
+                setLocale('zh-TW');
+                app.relaunch();
+                app.exit(0);
+            }
+        }]
+    }, {
         label: 'SSL',
         submenu: [{
-            label: '下载证书...',
+            label: i18n.__('down_cert'),
             click() {
                 dialog.showSaveDialog({
-                    title: '保存证书',
+                    title: i18n.__('save_cert'),
                     defaultPath: path.join(app.getPath('desktop'), 'MockCA.pem'),
-                    buttonLabel: '保存证书',
+                    buttonLabel: i18n.__('save_cert'),
                     filters: [{
                         name: 'pem',
                         extensions: ['pem']
@@ -73,23 +118,23 @@ module.exports = () => {
                 });
             }
         }, {
-            label: '打开证书管理器',
+            label: i18n.__('open_cert'),
             click() {
                 cp.exec('certmgr.msc');
             }
         }, {
-            label: '安装说明',
+            label: i18n.__('desc_cert'),
             click() {
                 electron.shell.openExternal('https://github.com/eshengsky/Mocker#常见问题');
             }
         }]
     }, {
-        label: '窗口',
+        label: i18n.__('window'),
         submenu: [{
-            label: '最小化',
+            label: i18n.__('min'),
             role: 'minimize'
         }, {
-            label: '全屏模式',
+            label: i18n.__('full_screen'),
             accelerator: 'F11',
             click(item, focusedWindow) {
                 if (focusedWindow) {
@@ -98,35 +143,35 @@ module.exports = () => {
             }
         }]
     }, {
-        label: '帮助',
+        label: i18n.__('help'),
         submenu: [{
-            label: `版本 ${app.getVersion()}`,
+            label: `${i18n.__('version')} ${app.getVersion()}`,
             enabled: false
         }, {
-            label: '项目主页',
+            label: i18n.__('homepage'),
             click() {
                 electron.shell.openExternal('https://github.com/eshengsky/Mocker');
             }
         }, {
-            label: '问题反馈',
+            label: i18n.__('issue'),
             click() {
                 electron.shell.openExternal('https://github.com/eshengsky/Mocker/issues');
             }
         }, {
             type: 'separator'
         }, {
-            label: '切换开发人员工具',
+            label: i18n.__('devtool'),
             accelerator: 'F12',
             role: 'toggledevtools'
         }, {
-            label: '查看调试日志',
+            label: i18n.__('show_log'),
             click() {
                 electron.shell.openItem(logPath);
             }
         }, {
             type: 'separator'
         }, {
-            label: '检查更新...',
+            label: i18n.__('checkupdate'),
             click(item, focusedWindow) {
                 // send to renderer
                 focusedWindow.webContents.send('update', true);
@@ -134,7 +179,7 @@ module.exports = () => {
         }, {
             type: 'separator'
         }, {
-            label: '关于作者',
+            label: i18n.__('about'),
             click() {
                 electron.shell.openExternal('http://www.skysun.name/about');
             }
