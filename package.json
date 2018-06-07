@@ -1,7 +1,7 @@
 {
   "name": "mocker",
   "productName": "Mocker",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "HTTP/HTTPS mock tool, based on proxy server.",
   "private": true,
   "main": "main.js",

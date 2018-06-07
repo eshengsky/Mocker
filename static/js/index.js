@@ -80,7 +80,6 @@ class Mocker {
             const lc = el.getAttribute('locale');
             const name = i18n.__(lc);
             el.textContent = name;
-            console.log(locale, lc,i18n.__('new'))
         });
         document.querySelector('#text-uri').setAttribute('placeholder', i18n.__('uri_placeholder'));
         document.querySelector('#text-header').setAttribute('placeholder', i18n.__('header_placeholder'));
@@ -95,9 +94,22 @@ class Mocker {
             if (Array.isArray(data)) {
                 let html = '';
                 data.forEach(item => {
+                    let showMethod = item.method.toUpperCase();
+                    switch (showMethod) {
+                        case 'ALL':
+                            showMethod = 'ALL';
+                            break;
+                        case 'DELETE':
+                            showMethod = 'DEL';
+                            break;
+                        case 'OPTIONS':
+                            showMethod = 'OPT';
+                            break;
+                        default:
+                    }
                     html +=
                         `<tr>
-                        <td align="center"><span class="list-method">${item.method === 'ALL' ? i18n.__('all') : item.method}</span></td>
+                        <td align="center"><span class="list-method ${item.method}" title="${item.method === 'ALL' ? i18n.__('all') : item.method}">${showMethod}</span></td>
                         <td><span title="${item.uri}" class="list-uri">${item.uri}</span></td>
                         <td class="td-active"><input data-uid="${item.id}" type="checkbox" class="cb-active" ${item.active === '1' ? 'checked' : ''} onchange="activeRule(this)"></td>
                         <td align="center"><button class="btn-action btn-edit" title="${i18n.__('modify')}" onclick="editMock('${item.id}');"><i class="fa fa-pencil"></i></button>
@@ -255,7 +267,7 @@ class Mocker {
     resetMockDetails() {
         this.$uid.val('');
         this.$textUri.val('');
-        this.$selectMethod.selectlist('selectByValue', 'ALL');
+        this.$selectMethod.selectlist('selectByValue', 'GET');
         this.$selectStatus.combobox('selectByValue', '200');
         this.$selectMime.combobox('selectByValue', 'application/json; charset=UTF-8');
         this.$textHeader.val('');

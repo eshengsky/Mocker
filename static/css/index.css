@@ -178,6 +178,32 @@ input::-webkit-inner-spin-button{
     white-space: nowrap;
 }
 
+.list-method {
+    font-size: 12px;
+    font-weight: bold;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+    color: #808080;
+    padding-top: 5px;
+}
+
+.list-method.GET {
+    color: #26B47F;
+}
+
+.list-method.POST {
+    color: #FFB400;
+}
+
+.list-method.PUT {
+    color: #097BED;
+}
+
+.list-method:DELETE {
+    color: #ED4B48;
+}
+
 .swal2-confirm.btn-danger {
     background: #ff4351;
 }

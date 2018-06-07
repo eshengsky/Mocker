@@ -37,7 +37,7 @@ module.exports = () => {
         if (!global.mockSettings) {
             return;
         }
-        const findOne = global.mockSettings.find(t => (fullUrl.indexOf(t.uri) >= 0)
+        const findOne = global.mockSettings.find(t => (decodeURIComponent(fullUrl).indexOf(decodeURIComponent(t.uri)) >= 0)
             && (t.method === 'ALL' || (t.method.toUpperCase() === req.method.toUpperCase()))
             && (t.active === '1'));
         if (findOne) {
